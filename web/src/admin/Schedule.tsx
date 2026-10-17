@@ -104,7 +104,7 @@ export default function Schedule() {
         </>
       )}
       {picked.size > 0 && (
-        <div className="fixed inset-x-0 bottom-3 z-30 mx-auto flex max-w-md items-center justify-between gap-2 rounded-2xl bg-pitch p-3 text-white shadow-lg">
+        <div className="fixed inset-x-0 bottom-20 z-30 lg:bottom-3 mx-auto flex max-w-md items-center justify-between gap-2 rounded-2xl bg-pitch p-3 text-white shadow-lg">
           <span className="pl-1 font-semibold">{picked.size} selected</span>
           <div className="flex gap-2">
             <button className="rounded-xl bg-white/15 px-3 py-2 text-sm" onClick={() => setPicked(new Set())}>Clear</button>
