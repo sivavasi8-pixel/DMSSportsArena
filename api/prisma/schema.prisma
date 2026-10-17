@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  fullName       String    @map("full_name")
+  mobile         String    @unique
+  username       String?   @unique
+  pinHash        String    @map("pin_hash")
+  role           String    @default("user") // user | admin | super_admin
+  email          String?
+  dob            DateTime? @db.Date
+  playingRole    String?   @map("playing_role")
+  skillLevel     String?   @map("skill_level")
+  isActive       Boolean   @default(true) @map("is_active")
+  mustChangePin  Boolean   @default(false) @map("must_change_pin")
+  failedAttempts Int       @default(0) @map("failed_attempts")
+  lockedUntil    DateTime? @map("locked_until")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  bookings Booking[] @relation("BookingUser")
+  @@map("users")
+}
+
+model Resource {
+  id          Int     @id @default(autoincrement())
+  name        String
+  type        String // net | bowling_machine
+  description String?
+  surface     String? // turf | mat | astro
+  isActive    Boolean @default(true) @map("is_active")
+  sortOrder   Int     @default(0) @map("sort_order")
+
+  hours    OperatingHour[]
+  bookings Booking[]
+  blocks   SlotBlock[]
+  @@map("resources")
+}
+
+model OperatingHour {
+  id          Int       @id @default(autoincrement())
+  resourceId  Int?      @map("resource_id")
+  dayOfWeek   Int       @map("day_of_week") // 0 = Sunday
+  openTime    String    @map("open_time") // HH:MM IST
+  closeTime   String    @map("close_time")
+  slotMinutes Int       @default(60) @map("slot_minutes")
+  resource    Resource? @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@map("operating_hours")
+}
+
+model PricingRule {
+  id           Int    @id @default(autoincrement())
+  resourceType String @map("resource_type")
+  dayType      String @map("day_type") // weekday | weekend
+  startTime    String @map("start_time")
+  endTime      String @map("end_time")
+  priceInr     Int    @map("price_inr")
+
+  @@map("pricing_rules")
+}
+
+model Booking {
+  id            Int      @id @default(autoincrement())
+  bookingCode   String   @unique @map("booking_code")
+  userId        Int      @map("user_id")
+  resourceId    Int      @map("resource_id")
+  slotDate      DateTime @map("slot_date") @db.Date
+  startTime     String   @map("start_time")
+  endTime       String   @map("end_time")
+  status        String // held | confirmed | cancelled | completed | no_show
+  holdExpiresAt DateTime? @map("hold_expires_at")
+  amountInr     Int      @map("amount_inr")
+  paymentMode   String?  @map("payment_mode") // upi | at_nets
+  paymentStatus String   @default("pending") @map("payment_status") // pending | verification | paid | rejected | refunded
+  paidVia       String?  @map("paid_via") // upi | cash
+  upiRef        String?  @map("upi_ref")
+  notes         String?
+  createdBy     Int?     @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  user     User     @relation("BookingUser", fields: [userId], references: [id])
+  resource Resource @relation(fields: [resourceId], references: [id])
+
+  @@index([slotDate, resourceId])
+  @@index([userId])
+  @@map("bookings")
+}
+
+model SlotBlock {
+  id         Int      @id @default(autoincrement())
+  resourceId Int?     @map("resource_id")
+  blockDate  DateTime @map("block_date") @db.Date
+  startTime  String   @map("start_time")
+  endTime    String   @map("end_time")
+  reason     String?
+  createdBy  Int?     @map("created_by")
+  resource   Resource? @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@index([blockDate])
+  @@map("slot_blocks")
+}
+
+model VenueSettings {
+  id                  Int     @id @default(1)
+  venueName           String  @default("DMS Sports Arena") @map("venue_name")
+  address             String  @default("")
+  mapEmbedUrl         String  @default("") @map("map_embed_url")
+  mapLink             String  @default("") @map("map_link")
+  lat                 Float?
+  lng                 Float?
+  contactPhone        String  @default("") @map("contact_phone")
+  whatsapp            String  @default("")
+  upiId               String  @default("") @map("upi_id")
+  upiPayeeName        String  @default("DMS Sports Arena") @map("upi_payee_name")
+  cancellationHours   Int     @default(4) @map("cancellation_hours")
+  maxAdvanceDays      Int     @default(14) @map("max_advance_days")
+  maxBookingsPerDay   Int     @default(3) @map("max_bookings_per_day")
+
+  @@map("venue_settings")
+}
+
+model VenuePhoto {
+  id        Int     @id @default(autoincrement())
+  caption   String?
+  sortOrder Int     @default(0) @map("sort_order")
+  isCover   Boolean @default(false) @map("is_cover")
+  mime      String  @default("image/jpeg")
+  imageData Bytes   @map("image_data")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("venue_photos")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  actorId   Int?     @map("actor_id")
+  action    String
+  entity    String
+  entityId  String?  @map("entity_id")
+  details   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("audit_logs")
+}

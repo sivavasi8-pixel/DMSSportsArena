@@ -1,0 +1,4 @@
+.devdb/
+node_modules/
+dist/
+.env

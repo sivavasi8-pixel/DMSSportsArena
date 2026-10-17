@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+.dark { color-scheme: dark; }
+body { @apply bg-cream text-slate-800 font-sans antialiased; padding-bottom: env(safe-area-inset-bottom); }
+.dark body { @apply bg-[#0b1511] text-slate-100; }
+h1, h2, h3, .font-heading { font-family: Poppins, system-ui, sans-serif; }
+.card { @apply rounded-card bg-white shadow-soft border border-black/5; }
+.dark .card { @apply bg-[#12201a] border-white/10; }
+.btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold transition active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none; }
+.btn-primary { @apply btn bg-pitch text-white hover:bg-pitch-600; }
+.btn-ghost { @apply btn bg-black/5 text-slate-800 hover:bg-black/10; }
+.dark .btn-ghost { @apply bg-white/10 text-slate-100 hover:bg-white/15; }
+.btn-danger { @apply btn bg-ball text-white hover:bg-red-700; }
+.input { @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-3 outline-none focus:border-pitch focus:ring-2 focus:ring-turf/40; }
+.dark .input { @apply bg-[#0b1511] border-white/20; }
+.label { @apply mb-1 block text-sm font-medium text-slate-600; }
+.dark .label { @apply text-slate-300; }
+.skeleton { @apply animate-pulse rounded-xl bg-black/10; }
+.dark .skeleton { @apply bg-white/10; }
+.hatched { background-image: repeating-linear-gradient(45deg, rgba(100,116,139,.25) 0 4px, transparent 4px 8px); }

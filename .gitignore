@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.env
+.devdb/
+*.dump
+.env.*
+!.env.example

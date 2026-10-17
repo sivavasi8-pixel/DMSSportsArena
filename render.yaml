@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: dms-sports-arena
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL   # Neon pooled string (-pooler host, sslmode=require)
+        sync: false
+      - key: DIRECT_URL     # Neon direct string, used by prisma migrate
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: WEB_ORIGIN     # e.g. https://dms-sports-arena.onrender.com
+        sync: false

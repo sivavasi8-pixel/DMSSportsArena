@@ -1,0 +1,13 @@
+{
+  "name": "dms-sports-arena",
+  "private": true,
+  "scripts": {
+    "install:all": "npm --prefix api ci --include=dev && npm --prefix web ci --include=dev",
+    "build": "npm run install:all && npm --prefix web run build && npm --prefix api run build && npx --prefix api prisma migrate deploy --schema api/prisma/schema.prisma",
+    "start": "node api/dist/index.js",
+    "dev:db": "npm --prefix api run devdb",
+    "dev:api": "npm --prefix api run dev",
+    "dev:web": "npm --prefix web run dev",
+    "test": "npm --prefix api test"
+  }
+}
